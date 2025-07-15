@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TaskBaseApp.ViewModels
 {
-	internal class AddTaskPageViewModel:ViewModelBase
+	public class AddTaskPageViewModel:ViewModelBase
 	{
 		public AddTaskPageViewModel()
 		{
