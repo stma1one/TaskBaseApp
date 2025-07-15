@@ -10,7 +10,7 @@ namespace TaskBaseApp.Service;
 /// <summary>
 /// ממשק (Interface) המגדיר את החוזה עבור שירותי התחברות וניהול משימות.
 /// </summary>
-public interface ILoginService
+public interface ITaskServices
 {
 	/// <summary>
 	/// פעולה לאימות פרטי משתמש.

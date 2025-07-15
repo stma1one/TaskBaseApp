@@ -15,7 +15,7 @@ namespace TaskBaseApp.ViewModels;
 public class LoginPageViewModel : ViewModelBase
 {
 	// שדה פרטי לשמירת שירות ההתחברות שהוזרק
-	ILoginService db;
+	ITaskServices db;
 
 	private string? _userName;
 	private string? _password;
@@ -143,7 +143,7 @@ public class LoginPageViewModel : ViewModelBase
 	/// בנאי של ה-ViewModel.
 	/// </summary>
 	/// <param name="service">שירות ההתחברות שיוזרק באמצעות Dependency Injection.</param>
-	public LoginPageViewModel(ILoginService service)
+	public LoginPageViewModel(ITaskServices service)
 	{
 		db = service;
 		// אתחול הפקודות והגדרת ערכים ראשוניים

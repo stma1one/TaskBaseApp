@@ -58,7 +58,7 @@ namespace TaskBaseApp
 		#region load Services
         public static MauiAppBuilder AddServices(this MauiAppBuilder builder)
         {
-            builder.Services.AddSingleton<ILoginService, DBMokup>();
+            builder.Services.AddSingleton<ITaskServices, DBMokup>();
        
             return builder;
 		}
