@@ -148,7 +148,7 @@ public class DBMokup : ITaskServices
 	/// </summary>
 	/// <param name="userId">מזהה המשתמש.</param>
 	/// <returns>רשימת המשימות.</returns>
-	public List<UserTask> GetTasks(int userId)
+	public async Task<List<UserTask>> GetTasks(int userId)
 	{
 		throw new NotImplementedException("This method is not implemented yet.");
 	}

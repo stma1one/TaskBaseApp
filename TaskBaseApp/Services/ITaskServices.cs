@@ -25,7 +25,7 @@ public interface ITaskServices
 	/// </summary>
 	/// <param name="userId">מזהה המשתמש.</param>
 	/// <returns>רשימת המשימות.</returns>
-	public List<UserTask> GetTasks(int userId);
+	public  Task<List<UserTask>> GetTasks(int userId);
 
 	/// <summary>
 	/// מוסיף משימה חדשה.
