@@ -21,7 +21,7 @@ public class UserTask
 	/// <summary>
 	/// המשתמש המשויך למשימה.
 	/// </summary>
-	public User? user
+	public User? User
 	{
 		get; set;
 	}

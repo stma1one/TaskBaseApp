@@ -37,7 +37,7 @@ public class DBMokup : ITaskServices
 		tasks.Add(new UserTask
 		{
 			TaskId = 1,
-			user = users.First(u => u.UserId == 1), // admin
+			User = users.First(u => u.UserId == 1), // admin
 			UrgencyLevel = urgencyLevels.First(ul => ul.UrgencyLevelId == 3), // גבוהה
 			TaskDescription = "לסיים את הדוח השבועי",
 			TaskDueDate = DateOnly.FromDateTime(DateTime.Now.AddDays(1)),
@@ -47,7 +47,7 @@ public class DBMokup : ITaskServices
 		tasks.Add(new UserTask
 		{
 			TaskId = 2,
-			user = users.First(u => u.UserId == 1), // admin
+			User = users.First(u => u.UserId == 1), // admin
 			UrgencyLevel = urgencyLevels.First(ul => ul.UrgencyLevelId == 2), // בינונית
 			TaskDescription = "להתכונן לפגישת צוות",
 			TaskDueDate = DateOnly.FromDateTime(DateTime.Now.AddDays(3)),
@@ -57,7 +57,7 @@ public class DBMokup : ITaskServices
 		tasks.Add(new UserTask
 		{
 			TaskId = 3,
-			user = users.First(u => u.UserId == 2), // user1
+			User = users.First(u => u.UserId == 2), // user1
 			UrgencyLevel = urgencyLevels.First(ul => ul.UrgencyLevelId == 1), // נמוכה
 			TaskDescription = "לעדכן את תיעוד הפרויקט",
 			TaskDueDate = DateOnly.FromDateTime(DateTime.Now.AddDays(7)),
@@ -150,6 +150,23 @@ public class DBMokup : ITaskServices
 	/// <returns>רשימת המשימות.</returns>
 	public async Task<List<UserTask>> GetTasks(int userId)
 	{
-		throw new NotImplementedException("This method is not implemented yet.");
+		await Task.Delay(1000); // סימול של עיכוב בטעינת הנתונים (כמו קריאה לבסיס נתונים)
+		return this.tasks.Where(x => x.User.UserId == userId).Select(x=> new UserTask
+		{
+			TaskId = x.TaskId,
+			User = x.User,
+			UrgencyLevel = x.UrgencyLevel,
+			TaskDescription = x.TaskDescription,
+			TaskDueDate = x.TaskDueDate,
+			TaskActualDate = x.TaskActualDate,
+			TaskComments = x.TaskComments.Select(c => new TaskComment
+			{
+				CommentId = c.CommentId,
+				Task = c.Task,
+				Comment = c.Comment,
+				CommentDate = c.CommentDate
+			}).ToList(),
+			TaskImage = x.TaskImage // Assuming TaskImage is a property in UserTask
+		}).ToList();
 	}
 }

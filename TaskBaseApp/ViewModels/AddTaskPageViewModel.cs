@@ -14,6 +14,5 @@ namespace TaskBaseApp.ViewModels
 		}
 		// Add properties, commands, and methods for the AddTaskPage functionality
 	}
-	{
-	}
+	
 }

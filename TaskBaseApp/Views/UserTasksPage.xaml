@@ -1,12 +1,113 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TaskBaseApp.Views.UserTasksPage"
-             Title="UserTasksPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+<ContentPage
+    x:Class="TaskBaseApp.Views.UserTasksPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:models="clr-namespace:TaskBaseApp.Models"
+    xmlns:viewmodels="clr-namespace:TaskBaseApp.ViewModels"
+    Title="UserTasksPage"
+    x:DataType="viewmodels:UserTasksPageViewModel">
+    <Grid Margin="15" RowDefinitions=".1*,.9*,auto">
+        <Border Stroke="Transparent">
+            <HorizontalStackLayout>
+                <SearchBar
+                    SearchCommand="{Binding FilterTaskCommand}"
+                    SearchCommandParameter="{Binding Source={x:RelativeSource Self}, Path=Text}"
+                    WidthRequest="280" />
+                <Button
+                    Background="Transparent"
+                    Command="{Binding ClearFilterCommand}"
+                    FontFamily="MaterialSymbols"
+                    FontSize="25"
+                    IsEnabled="{Binding FilterEnabled}"
+                    Text="&#xeb32;"
+                    TextColor="BlueViolet" />
+            </HorizontalStackLayout>
+        </Border>
+        <RefreshView
+            Grid.Row="1"
+            Command="{Binding LoadTasksCommand}"
+            IsRefreshing="{Binding IsBusy}">
+            <CollectionView ItemsSource="{Binding Tasks}" SelectionMode="None">
+                <CollectionView.EmptyView>
+                    <StackLayout
+                        Padding="20"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+                        <Label
+                            HorizontalTextAlignment="Center"
+                            Text="לא נמצאו משימות."
+                            TextColor="Gray" />
+                        <Label
+                            HorizontalTextAlignment="Center"
+                            Text="גרור כלפי מטה לרענון."
+                            TextColor="Gray" />
+                    </StackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+
+                    <DataTemplate x:DataType="models:ObservableUserTask">
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItems>
+                                    <SwipeItem Text="oops" />
+                                    <SwipeItem Text="oopsi" />
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+                            <!--  Use a Grid inside a Border for a modern card view  -->
+                            <Border
+                                Margin="15,7"
+                                Padding="15"
+                                BackgroundColor="{AppThemeBinding Light=White,
+                                                                  Dark=#1E1E1E}"
+                                Stroke="LightGray"
+                                StrokeShape="RoundRectangle 10">
+
+                                <Grid
+                                    ColumnDefinitions="*, Auto"
+                                    RowDefinitions="Auto, Auto"
+                                    RowSpacing="5">
+                                    <!--  Task Description  -->
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        Text="{Binding TaskDescription}"
+                                        VerticalOptions="Center" />
+                                    <!--  Due Date  -->
+                                    <Label
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        FontSize="13"
+                                        Text="{Binding TaskDueDate, StringFormat='Due: {0:dd/MM/yyyy}'}"
+                                        TextColor="Gray"
+                                        VerticalOptions="Center" />
+                                    <!--  Urgency Level as a Chip  -->
+                                    <Border
+                                        Grid.RowSpan="2"
+                                        Grid.Column="1"
+                                        Padding="10,5"
+                                        BackgroundColor="{AppThemeBinding Light=LightGray,
+                                                                          Dark=#333333}"
+                                        StrokeShape="RoundRectangle 15"
+                                        VerticalOptions="Center">
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="12"
+                                            Text="{Binding UrgencyLevel.UrgencyLevelName}"
+                                            VerticalOptions="Center" />
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </SwipeView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+        <Button
+            Grid.Row="2"
+            Command="{Binding ChangeTaskDescriptionCommand}"
+            Text="+"
+            WidthRequest="50" />
+    </Grid>
 </ContentPage>

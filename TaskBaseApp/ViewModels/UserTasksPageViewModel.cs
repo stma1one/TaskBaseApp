@@ -4,29 +4,29 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using TaskBaseApp.Models;
 using TaskBaseApp.Service;
 
 namespace TaskBaseApp.ViewModels;
 
-internal class UserTasksPageViewModel:ViewModelBase
+public class UserTasksPageViewModel:ViewModelBase
 {
 	// Add properties, commands, and methods for the UserTasksPage functionality
 	#region Fields
 	ITaskServices _taskService;// Service for task management
-	List<UserTask> userTask; // Represents a user task
+	List<UserTask> userTask=new(); // Represents a User task
 	Task loadData { get; set; }// Represents a task for loading data
 
-	ObservableCollection<UserTask> _allUserTasks=new(); // Collection of user tasks for binding to the UI
-	ObservableCollection<UserTask> _filteredUserTasks = new(); // Collection of completed user tasks for binding to the UI
-	string _searchText = string.Empty; // Search text for filtering tasks
+	ObservableCollection<ObservableUserTask> _allUserTasks=new(); // Collection of User tasks for binding to the UI
+	ObservableCollection<ObservableUserTask> _filteredUserTasks = new(); // Collection of completed User tasks for binding to the UI
 	bool _isLoading = false; // Indicates whether data is currently being loaded
 	int userId;
 	#endregion
 
 
 	#region Properties
-	public ObservableCollection<UserTask> Tasks{get; set;} 
+	public ObservableCollection<ObservableUserTask> Tasks{get; set;} 
 	public bool IsLoading{
 		get => _isLoading;
 		set
@@ -35,21 +35,13 @@ internal class UserTasksPageViewModel:ViewModelBase
 			{
 				_isLoading = value;
 				OnPropertyChanged();
+				OnPropertyChanged(nameof(FilterEnabled));
 			}
 		}
 	}
-	public string SearchText
-	{
-		get => _searchText;
-		set
-		{
-			if (_searchText != value)
-			{
-				_searchText = value;
-				OnPropertyChanged();
-				FilterTasks(); // Filter tasks when search text changes
-			}
-		}
+
+	public bool FilterEnabled {
+		get => !IsLoading;
 	}
 	public int UserId
 	{
@@ -66,38 +58,89 @@ internal class UserTasksPageViewModel:ViewModelBase
 
 	#endregion
 	#region Commands
+	public ICommand LoadTasksCommand
+	{
+		get;
+	}
+	public ICommand FilterTaskCommand
+	{
+		get;
+	}
+	public ICommand ClearFilterCommand
+	{
+		get;
+	}
+	public ICommand ChangeTaskDescriptionCommand
+	{
+		get;
+	}
 	#endregion
 	#region Constructor
 	public UserTasksPageViewModel(ITaskServices services)
 	{
 		// Initialize properties or commands here if needed
+		UserId = 1;
 		_taskService = services;
 		Tasks = new();
+		LoadTasksCommand = new Command(async () => await LoadUserTasksAsync());
+		FilterTaskCommand = new Command<string>(async (query) => await FilterTasks(query));
+		ClearFilterCommand = new Command(async () => await FilterTasks(string.Empty));
+		ChangeTaskDescriptionCommand = new Command(() => { if (Tasks.Count > 0) { Tasks[0].TaskDescription = "וואחד שינוי"; } });
 		LoadUserTasksAsync().ConfigureAwait(false);
 	}
 	#endregion
 
 	#region Methods
-	private void FilterTasks()
+	private async Task FilterTasks(string query)
 	{
-		throw new NotImplementedException();
+		IsLoading = true;
+		
+		if (!string.IsNullOrEmpty(query))
+		{
+			_filteredUserTasks = new ObservableCollection<ObservableUserTask>(_allUserTasks.Where(x => x.TaskDescription.Contains(query)));
+			Application.Current?.Dispatcher.Dispatch(() =>
+			{
+				Tasks.Clear();
+				foreach (var task in _filteredUserTasks)
+				{
+					Tasks.Add(task);
+				}
+			});
+			IsLoading = false;
+			return;
+		}
+		await LoadUserTasksAsync();
+		IsLoading = false;
+
+
+
 	}
 	/// <summary>
-	/// Loads user tasks from the service.
+	/// Loads User tasks from the service.
 	/// </summary>
 	public async Task LoadUserTasksAsync()
 	{
 		IsLoading = true;
 		try
 		{
-			userTask = await _taskService.GetTasks(UserId); // Assuming 1 is the user ID
+			userTask.Clear();
+			_allUserTasks.Clear();
+			userTask = await _taskService.GetTasks(UserId); // Assuming 1 is the User ID
 			if (userTask != null && userTask.Count > 0)
 			{
 				foreach (var task in userTask)
 				{
-					_allUserTasks.Add(task);
+					_allUserTasks.Add(new ObservableUserTask(task));
 				}
 			}
+			Application.Current?.Dispatcher.Dispatch(() =>
+			{
+				Tasks.Clear();
+				foreach (var task in _allUserTasks)
+				{
+					Tasks.Add(task);
+				}
+			});
 		}
 		catch (Exception ex)
 		{
@@ -106,6 +149,7 @@ internal class UserTasksPageViewModel:ViewModelBase
 		finally
 		{
 			IsLoading = false;
+			IsBusy = false;
 		}
 	}
 	#endregion

@@ -1,9 +1,12 @@
+using TaskBaseApp.ViewModels;
+
 namespace TaskBaseApp.Views;
 
 public partial class UserTasksPage : ContentPage
 {
-	public UserTasksPage()
+	public UserTasksPage(UserTasksPageViewModel vm)
 	{
 		InitializeComponent();
+		BindingContext = vm;
 	}
 }
