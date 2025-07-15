@@ -24,7 +24,7 @@ namespace TaskBaseApp
 			builder.Services.AddSingleton<Views.LoginPage>();
 			builder.Services.AddTransient<ViewModels.LoginPageViewModel>();
 
-			builder.Services.AddSingleton<ILoginService, DBMokup>();
+			builder.Services.AddSingleton<ITaskServices, DBMokup>();
 
 #if DEBUG
 			builder.Logging.AddDebug();

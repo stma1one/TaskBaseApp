@@ -10,7 +10,7 @@ namespace TaskBaseApp.Service;
 /// <summary>
 /// מימוש של שירות ההתחברות המשתמש ברשימת משתמשים מקומית (Mock) לצורכי פיתוח ובדיקה.
 /// </summary>
-public class DBMokup : ILoginService
+public class DBMokup : ITaskServices
 {
 	// רשימות המשמשות כמסד נתונים מדמה
 	List<Models.User> users = new List<Models.User>();
