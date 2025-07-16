@@ -16,12 +16,13 @@ public class UserTasksPageViewModel:ViewModelBase
 	#region Fields
 	ITaskServices _taskService;// Service for task management
 	List<UserTask> userTask=new(); // Represents a User task
-	Task loadData { get; set; }// Represents a task for loading data
+	Task loadData;// Represents a task for loading data
 
 	ObservableCollection<ObservableUserTask> _allUserTasks=new(); // Collection of User tasks for binding to the UI
 	ObservableCollection<ObservableUserTask> _filteredUserTasks = new(); // Collection of completed User tasks for binding to the UI
 	bool _isLoading = false; // Indicates whether data is currently being loaded
 	int userId;
+        bool _hasError=false;
 	string _searchText;
 	#endregion
 
@@ -72,6 +73,16 @@ public class UserTasksPageViewModel:ViewModelBase
 		}
 	}
 
+ 	public bool HasError
+  {
+  get=>_hasError;
+  set
+  {
+  	_hasError=value;
+        OnPropertyChanged();
+  }
+  }
+
 	#endregion
 	#region Commands
 	public ICommand LoadTasksCommand
@@ -102,7 +113,7 @@ public class UserTasksPageViewModel:ViewModelBase
 		FilterTaskCommand = new Command<string>(async (query) => await FilterTasks(query));
 		ClearFilterCommand = new Command(async () => await FilterTasks(string.Empty),()=>string.IsNullOrEmpty(SearchText));
 		ChangeTaskDescriptionCommand = new Command(() => { if (Tasks.Count > 0) { Tasks[0].TaskDescription = "וואחד שינוי"; } });
-		LoadUserTasksAsync().ConfigureAwait(false);
+		loadData=loadDaLoadUserTasksAsync();
 	}
 	#endregion
 
@@ -161,6 +172,7 @@ public class UserTasksPageViewModel:ViewModelBase
 		catch (Exception ex)
 		{
 			Console.WriteLine($"Error loading tasks: {ex.Message}");
+   			HasError=true;
 		}
 		finally
 		{
