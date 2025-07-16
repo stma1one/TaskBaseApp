@@ -11,15 +11,16 @@
         <Border Stroke="Transparent">
             <HorizontalStackLayout>
                 <SearchBar
+                    Placeholder="חפש משימה"
                     SearchCommand="{Binding FilterTaskCommand}"
                     SearchCommandParameter="{Binding Source={x:RelativeSource Self}, Path=Text}"
+                    Text="{Binding SearchText}"
                     WidthRequest="280" />
                 <Button
                     Background="Transparent"
                     Command="{Binding ClearFilterCommand}"
                     FontFamily="MaterialSymbols"
                     FontSize="25"
-                    IsEnabled="{Binding FilterEnabled}"
                     Text="&#xeb32;"
                     TextColor="BlueViolet" />
             </HorizontalStackLayout>

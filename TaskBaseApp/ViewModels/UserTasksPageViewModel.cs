@@ -22,6 +22,7 @@ public class UserTasksPageViewModel:ViewModelBase
 	ObservableCollection<ObservableUserTask> _filteredUserTasks = new(); // Collection of completed User tasks for binding to the UI
 	bool _isLoading = false; // Indicates whether data is currently being loaded
 	int userId;
+	string _searchText;
 	#endregion
 
 
@@ -35,14 +36,14 @@ public class UserTasksPageViewModel:ViewModelBase
 			{
 				_isLoading = value;
 				OnPropertyChanged();
-				OnPropertyChanged(nameof(FilterEnabled));
+			//	OnPropertyChanged(nameof(FilterEnabled));
 			}
 		}
 	}
 
-	public bool FilterEnabled {
-		get => !IsLoading;
-	}
+	//public bool FilterEnabled {
+	//	get => !IsLoading;
+	//}
 	public int UserId
 	{
 		get => userId;
@@ -52,6 +53,21 @@ public class UserTasksPageViewModel:ViewModelBase
 			{
 				userId = value;
 				OnPropertyChanged();
+			}
+		}
+	}
+
+	public string SearchText
+	{
+		get => _searchText;
+		set
+		{
+			if (_searchText != value)
+			{
+				_searchText = value;
+				OnPropertyChanged();
+				(FilterTaskCommand as Command)?.ChangeCanExecute(); // Update the command state when SearchText changes
+
 			}
 		}
 	}
@@ -84,7 +100,7 @@ public class UserTasksPageViewModel:ViewModelBase
 		Tasks = new();
 		LoadTasksCommand = new Command(async () => await LoadUserTasksAsync());
 		FilterTaskCommand = new Command<string>(async (query) => await FilterTasks(query));
-		ClearFilterCommand = new Command(async () => await FilterTasks(string.Empty));
+		ClearFilterCommand = new Command(async () => await FilterTasks(string.Empty),()=>string.IsNullOrEmpty(SearchText));
 		ChangeTaskDescriptionCommand = new Command(() => { if (Tasks.Count > 0) { Tasks[0].TaskDescription = "וואחד שינוי"; } });
 		LoadUserTasksAsync().ConfigureAwait(false);
 	}
@@ -94,6 +110,7 @@ public class UserTasksPageViewModel:ViewModelBase
 	private async Task FilterTasks(string query)
 	{
 		IsLoading = true;
+
 		
 		if (!string.IsNullOrEmpty(query))
 		{
@@ -133,14 +150,13 @@ public class UserTasksPageViewModel:ViewModelBase
 					_allUserTasks.Add(new ObservableUserTask(task));
 				}
 			}
-			Application.Current?.Dispatcher.Dispatch(() =>
-			{
+			
 				Tasks.Clear();
 				foreach (var task in _allUserTasks)
 				{
 					Tasks.Add(task);
 				}
-			});
+			
 		}
 		catch (Exception ex)
 		{
