@@ -37,14 +37,14 @@ public class UserTasksPageViewModel:ViewModelBase
 			{
 				_isLoading = value;
 				OnPropertyChanged();
-			//	OnPropertyChanged(nameof(FilterEnabled));
+				(ClearFilterCommand as Command)?.ChangeCanExecute(); // Update the command state when SearchText changes
+
+
 			}
 		}
 	}
 
-	//public bool FilterEnabled {
-	//	get => !IsLoading;
-	//}
+	
 	public int UserId
 	{
 		get => userId;
@@ -67,7 +67,7 @@ public class UserTasksPageViewModel:ViewModelBase
 			{
 				_searchText = value;
 				OnPropertyChanged();
-				(FilterTaskCommand as Command)?.ChangeCanExecute(); // Update the command state when SearchText changes
+				(ClearFilterCommand as Command)?.ChangeCanExecute(); // Update the command state when SearchText changes
 
 			}
 		}
@@ -111,9 +111,9 @@ public class UserTasksPageViewModel:ViewModelBase
 		Tasks = new();
 		LoadTasksCommand = new Command(async () => await LoadUserTasksAsync());
 		FilterTaskCommand = new Command<string>(async (query) => await FilterTasks(query));
-		ClearFilterCommand = new Command(async () => await FilterTasks(string.Empty),()=>string.IsNullOrEmpty(SearchText));
+		ClearFilterCommand = new Command(async () => await FilterTasks(string.Empty),()=>string.IsNullOrEmpty(SearchText)&&!IsLoading);
 		ChangeTaskDescriptionCommand = new Command(() => { if (Tasks.Count > 0) { Tasks[0].TaskDescription = "וואחד שינוי"; } });
-		loadData=loadDaLoadUserTasksAsync();
+		loadData=LoadUserTasksAsync();
 	}
 	#endregion
 
@@ -121,8 +121,8 @@ public class UserTasksPageViewModel:ViewModelBase
 	private async Task FilterTasks(string query)
 	{
 		IsLoading = true;
-
 		
+
 		if (!string.IsNullOrEmpty(query))
 		{
 			_filteredUserTasks = new ObservableCollection<ObservableUserTask>(_allUserTasks.Where(x => x.TaskDescription.Contains(query)));
@@ -139,7 +139,7 @@ public class UserTasksPageViewModel:ViewModelBase
 		}
 		await LoadUserTasksAsync();
 		IsLoading = false;
-
+		
 
 
 	}
@@ -167,7 +167,9 @@ public class UserTasksPageViewModel:ViewModelBase
 				{
 					Tasks.Add(task);
 				}
-			
+			await Task.Delay(500);
+			IsLoading = false;
+			HasError = false;
 		}
 		catch (Exception ex)
 		{

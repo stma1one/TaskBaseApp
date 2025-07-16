@@ -14,7 +14,7 @@
                     Placeholder="חפש משימה"
                     SearchCommand="{Binding FilterTaskCommand}"
                     SearchCommandParameter="{Binding Source={x:RelativeSource Self}, Path=Text}"
-                    Text="{Binding SearchText}"
+                    Text="{Binding SearchText, Mode=TwoWay}"
                     WidthRequest="280" />
                 <Button
                     Background="Transparent"
