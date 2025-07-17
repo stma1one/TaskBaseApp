@@ -148,8 +148,22 @@ public class DBMokup : ITaskServices
 	/// </summary>
 	/// <param name="userId">מזהה המשתמש.</param>
 	/// <returns>רשימת המשימות.</returns>
-	public List<UserTask> GetTasks(int userId)
+	public async Task<List<UserTask>> GetTasks(int userId)
 	{
-		throw new NotImplementedException("This method is not implemented yet.");
+		await Task.Delay(2000); // סימול של עיכוב רשת
+								//throw new Exception("This method is not implemented yet.");
+								//	return new List<UserTask>();
+		return tasks.FindAll(t => t.user.UserId == userId)
+		   .Select(t => new UserTask()
+		   {
+			   user = t.user,
+			   TaskActualDate = t.TaskActualDate,
+			   TaskComments = t.TaskComments,
+			   TaskDescription = t.TaskDescription,
+			   TaskDueDate = t.TaskDueDate,
+			   TaskId = t.TaskId,
+			   TaskImage = t.TaskImage,
+			   UrgencyLevel = t.UrgencyLevel
+		   }).ToList();
 	}
 }

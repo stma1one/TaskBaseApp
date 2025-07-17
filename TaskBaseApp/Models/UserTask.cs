@@ -71,4 +71,8 @@ public class UserTask
 	public UserTask()
 	{
 	}
+	public override string ToString()
+	{
+		return "kuku";
+	}
 }

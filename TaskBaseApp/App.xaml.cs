@@ -4,11 +4,15 @@ namespace TaskBaseApp
 {
     public partial class App : Application
     {
-		Page firstpage;
-		public App(LoginPage page)
+		IServiceProvider? provider;
+		Page? firstpage;
+		public App(IServiceProvider provider)
 		{
 			InitializeComponent();
-			this.firstpage = page;
+			this.provider = provider;
+		
+			firstpage = provider?.GetService<UserTasksPage>();
+			
 		}
 
 		protected override Window CreateWindow(IActivationState? activationState)
